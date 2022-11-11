@@ -27,6 +27,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+# Custom User Model
+AUTH_USER_MODEL = "profiles.Profile"
+
 # REST FRAMEWORK Settings
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
