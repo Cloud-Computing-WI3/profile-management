@@ -1,14 +1,29 @@
 from rest_framework import serializers
+from django.contrib.auth.models import Group
+
 from profiles.models import Profile
 
 
-class ProfileSerializer(serializers.Serializer):
-    id = serializers.IntegerField(read_only=True)
-    email = serializers.EmailField(required=True)
-    first_name = serializers.CharField()
-    last_name = serializers.CharField()
+class GroupSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.IntegerField()
+    name = serializers.CharField()
+    class Meta:
+        model = Group
+        fields = ("id", "name",)
+        extra_kwargs = {
+            "name": {"validators": []},
+        }
 
 
+class ProfileSerializer(serializers.ModelSerializer):
+    groups = GroupSerializer(many=True, required=False)
+
+    class Meta:
+        model = Profile
+        fields = (
+            "id", "email", "first_name", "last_name", "avatar",
+            "groups",
+        )
     def create(self, validated_data):
         """
         Create and return a new `Profile` instance, given the validated data.

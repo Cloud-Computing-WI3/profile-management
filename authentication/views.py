@@ -5,8 +5,30 @@ from rest_framework.viewsets import ModelViewSet, ViewSet
 from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from authentication.serializers import LoginSerializer, RefreshTokenSerializer
-from profiles.models import Profile
-from profiles.serializers import ProfileSerializer
+from rest_framework_simplejwt.tokens import RefreshToken
+from authentication.serializers import RegistrationSerializer
+
+class RegistrationViewSet(ModelViewSet, TokenObtainPairView):
+    serializer_class = RegistrationSerializer
+    permission_classes = (AllowAny,)
+    http_method_names = ["post"]
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        refresh = RefreshToken.for_user(user)
+        res = {
+            "refresh": str(refresh),
+            "access": str(refresh.access_token),
+        }
+
+        return Response({
+            "user": serializer.data,
+            "refresh": res["refresh"],
+            "token": res["access"]
+        }, status=status.HTTP_201_CREATED)
 
 class LoginViewSet(ModelViewSet, TokenObtainPairView):
     serializer_class = LoginSerializer
@@ -35,10 +57,8 @@ class RefreshViewSet(ViewSet, TokenRefreshView):
             serializer.is_valid(raise_exception=True)
             if serializer.is_valid():
                 access_token = serializer.validated_data["access"]
-                user = ProfileSerializer(instance=Profile.objects.get(pk=int(serializer.validated_data["pk"])))
                 data = {
                     "access": access_token,
-                    "user": user.data
                 }
         except TokenError as e:
             raise InvalidToken(e.args[0])
