@@ -28,8 +28,8 @@ class RegistrationSerializer(ProfileSerializer):
         if password != password2:
             raise serializers.ValidationError({"password": "Passwords must match."})
         account.set_password(password)
+        account.is_active = True
         account.save()
-        #TODO: Send mail to account after registration
         return account
 
 

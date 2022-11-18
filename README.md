@@ -14,7 +14,7 @@ See full list in `requirements.txt`
 2. Run `gcloud auth login` and login with your google cloud user
 3. Run `gcloud auth application-default login` and login with your google cloud user
 4. Run through steps described in [Google Cloud SQL Proxy](https://cloud.google.com/sql/docs/mysql/quickstart-proxy-test#install-proxy)
-5. Run `./cloud_sql_proxy -instances=cohesive-slate-368310:us-central1:profile-management-database=tcp:3306`
+5. Run `./cloud_sql_proxy -instances=cohesive-slate-368310:us-central1:profile-management-database=tcp:5435`
 6. Make sure, proxy is running
 7. Start service by running `python manage.py runserver`
 ##  Deployment
