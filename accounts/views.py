@@ -11,6 +11,11 @@ from rest_framework.response import Response
 from rest_framework import status
 from accounts.models import Account
 from accounts.serializers import GoogleLoginSerializer, AccountSerializer
+from django.dispatch import receiver
+from allauth.socialaccount.signals import social_account_updated
+import urllib.request
+from django.core.files import File
+
 class AccountView(ModelViewSet):
     serializer_class = AccountSerializer
     permission_classes = (IsAuthenticated,)
@@ -63,3 +68,18 @@ class LoginViewSet(ModelViewSet, TokenObtainPairView):
             raise InvalidToken(e.args[0])
 
         return Response(serializer.validated_data, status=status.HTTP_200_OK)
+
+
+@receiver(social_account_updated)
+def populate_profile(sociallogin, **kwargs):
+    user = sociallogin.user
+    if sociallogin.account.provider is not None:
+        user_data = sociallogin.account.extra_data
+        picture_url = user_data["picture"]
+        given_name = user_data["given_name"]
+        family_name = user_data["family_name"]
+
+    #TODO: Upload image to file storage
+    user.given_name = given_name
+    user.family_name = family_name
+    user.save()

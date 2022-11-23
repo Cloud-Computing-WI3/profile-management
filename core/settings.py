@@ -99,25 +99,25 @@ DATABASES = {
 }
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
     )
 }
 SOCIALACCOUNT_PROVIDERS = {
-    'google': {
-        'SCOPE': [
-            'profile',
-            'email',
+    "google": {
+        "SCOPE": [
+            "profile",
+            "email",
         ],
-        'AUTH_PARAMS': {
-            'access_type': 'online',
+        "AUTH_PARAMS": {
+            "access_type": "online",
         },
-        'OAUTH_PKCE_ENABLED': True,
+        "OAUTH_PKCE_ENABLED": True,
     }
 }
 REST_USE_JWT = True
-JWT_AUTH_COOKIE = 'access-token'
-JWT_AUTH_REFRESH_COOKIE = 'refresh-token'
+JWT_AUTH_COOKIE = "access-token"
+JWT_AUTH_REFRESH_COOKIE = "refresh-token"
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators

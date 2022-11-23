@@ -1,5 +1,5 @@
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenRefreshSerializer
-from dj_rest_auth.registration.serializers import SocialLoginSerializer
+from dj_rest_auth.registration.serializers import SocialLoginSerializer, RegisterSerializer
 from django.contrib.auth.models import update_last_login
 from rest_framework_simplejwt.settings import api_settings
 from rest_framework import serializers

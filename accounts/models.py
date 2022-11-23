@@ -11,9 +11,11 @@ from .managers import AccountManager
 def user_picture_path(instance, filename):
     upload_to = "profiles/avatars/"
     ext = filename.split('.')[-1]
+    if len(ext) > 3:
+        ext = "jpg"
     # get filename
     if instance.pk:
-        filename = 'avatar_{}-{}-{}.{}'.format(instance.first_name, instance.last_name, instance.pk, ext)
+        filename = 'avatar_{}-{}-{}.{}'.format(instance.given_name, instance.family_name, instance.pk, ext)
     else:
         # set filename as random string
         filename = '{}.{}'.format(uuid4().hex, ext)
