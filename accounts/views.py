@@ -13,8 +13,9 @@ from accounts.models import Account
 from accounts.serializers import GoogleLoginSerializer, AccountSerializer
 from django.dispatch import receiver
 from allauth.socialaccount.signals import social_account_updated
-import urllib.request
 from django.core.files import File
+from django.core.files.temp import NamedTemporaryFile
+import urllib.request
 
 class AccountView(ModelViewSet):
     serializer_class = AccountSerializer
@@ -78,8 +79,11 @@ def populate_profile(sociallogin, **kwargs):
         picture_url = user_data["picture"]
         given_name = user_data["given_name"]
         family_name = user_data["family_name"]
-
-    #TODO: Upload image to file storage
+        img_temp = NamedTemporaryFile(delete=True)
+        img_temp.write(urllib.request.urlopen(picture_url).read())
+        img_temp.flush()
+        #TODO: Upload image to file storage
+        user.picture = File(img_temp)
     user.given_name = given_name
     user.family_name = family_name
     user.save()
