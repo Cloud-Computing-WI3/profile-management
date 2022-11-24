@@ -82,7 +82,6 @@ def populate_profile(sociallogin, **kwargs):
         img_temp = NamedTemporaryFile(delete=True)
         img_temp.write(urllib.request.urlopen(picture_url).read())
         img_temp.flush()
-        #TODO: Upload image to file storage
         user.picture = File(img_temp)
     user.given_name = given_name
     user.family_name = family_name
