@@ -16,5 +16,5 @@ See full list in `requirements.txt`
 4. Run through steps described in [Google Cloud SQL Proxy](https://cloud.google.com/sql/docs/mysql/quickstart-proxy-test#install-proxy)
 5. Run `./cloud_sql_proxy -instances=cohesive-slate-368310:us-central1:profile-management-service=tcp:5435`
 6. Make sure, proxy is running
-7. Start service by running `python manage.py runserver`
+7. Start service by running `python manage.py runserver localhost:8000`
 ##  Deployment

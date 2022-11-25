@@ -43,3 +43,4 @@ class Account(AbstractBaseUser, PermissionsMixin):
     @property
     def full_name(self):
         return "{} {}".format(self.given_name, self.family_name)
+

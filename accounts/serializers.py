@@ -71,3 +71,5 @@ class GoogleLoginSerializer(SocialLoginSerializer):
         attrs["acc"] = account
 
         return attrs
+
+#TODO: RegistrationSerializer bauen
