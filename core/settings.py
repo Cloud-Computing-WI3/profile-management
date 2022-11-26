@@ -25,7 +25,7 @@ SECRET_KEY = "django-insecure-^dfd+2vfj9df%)gofr7h72b@-0f*h8=p31@6tyjaf8edk7g+0*
 # SECURITY WARNING: don"t run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["profile-management-2qda3nwega-uc.a.run.app"]
 CORS_ALLOWED_ORIGINS = ["http://localhost:3000"]
 # Application definition
 AUTH_USER_MODEL = "accounts.Account"
