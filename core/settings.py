@@ -91,14 +91,16 @@ WSGI_APPLICATION = "core.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
-
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": "profile_management",
+        "USER": "admin",
+        "PASSWORD": "W*2mLDsXQy7TYc",
+        "HOST": "profile-management.c9epzfgto5cy.us-east-1.rds.amazonaws.com",
+        "PORT": "3306",
     }
 }
-
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
