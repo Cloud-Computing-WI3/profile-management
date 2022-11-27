@@ -25,7 +25,7 @@ SECRET_KEY = "django-insecure-^dfd+2vfj9df%)gofr7h72b@-0f*h8=p31@6tyjaf8edk7g+0*
 # SECURITY WARNING: don"t run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["profile-management-2qda3nwega-uc.a.run.app"]
+ALLOWED_HOSTS = ["localhost", "profile-management-2qda3nwega-uc.a.run.app"]
 CORS_ALLOWED_ORIGINS = ["http://localhost:3000"]
 # Application definition
 AUTH_USER_MODEL = "accounts.Account"
@@ -157,6 +157,16 @@ USE_TZ = True
 STATIC_URL = "static/"
 
 # File Uploads
+AWS_ACCESS_KEY_ID = "AKIAT4ACZN3WATI5FKQ7"
+AWS_SECRET_ACCESS_KEY = "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"
+AWS_STORAGE_BUCKET_NAME = "profile-management-m-ngucu959yxpxdmrffqra1buedz47ruse1b-s3alias"
+AWS_S3_SIGNATURE_VERSION = "s3v4"
+AWS_S3_REGION_NAME = "us-east-1"
+AWS_S3_FILE_OVERWRITE = False
+AWS_DEFAULT_ACL = None
+AWS_S3_VERIFY = True
+DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+
 STATIC_URL = "/static/"
 MEDIA_URL = "/media/"
 
