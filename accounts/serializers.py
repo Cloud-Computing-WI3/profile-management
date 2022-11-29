@@ -4,7 +4,23 @@ from django.contrib.auth.models import update_last_login
 from rest_framework_simplejwt.settings import api_settings
 from rest_framework import serializers
 from django.contrib.auth.models import Group
-from .models import Account
+from .models import Account, Category, Keyword
+
+class CategorySerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Category
+        fields = ("id", "name",)
+        extra_kwargs = {
+            "name": {"validators": []},
+        }
+
+class KeywordSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Keyword
+        fields = ("id", "name",)
+        extra_kwargs = {
+            "name": {"validators": []},
+        }
 
 
 class GroupSerializer(serializers.HyperlinkedModelSerializer):
@@ -18,11 +34,14 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
 
 class AccountSerializer(serializers.ModelSerializer):
     groups = GroupSerializer(many=True, required=False)
+    keywords = KeywordSerializer(many=True, required=False)
+    categories = CategorySerializer(many=True, required=False)
 
     class Meta:
         model = Account
         fields = [
-            "id", "email", "given_name", "family_name", "picture", "is_staff", "is_superuser", "date_joined", "groups"
+            "id", "email", "given_name", "family_name", "picture", "is_staff", "is_superuser", "date_joined",
+            "groups", "categories", "keywords"
         ]
 
     def update(self, instance, validated_data):
