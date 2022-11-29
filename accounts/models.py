@@ -8,6 +8,14 @@ from django.utils.translation import ugettext_lazy as _
 
 from .managers import AccountManager
 
+class Keyword(models.Model):
+    name = models.CharField(max_length=100)
+class Category(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
 def user_picture_path(instance, filename):
     upload_to = "profiles/avatars/"
     ext = filename.split('.')[-1]
@@ -30,6 +38,8 @@ class Account(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     date_joined = models.DateTimeField(default=timezone.now)
     picture = models.ImageField(upload_to=user_picture_path, blank=True, null=True)
+    categories = models.ManyToManyField(Category)
+    keywords = models.ManyToManyField(Keyword)
 
 
     USERNAME_FIELD = "email"
@@ -43,4 +53,3 @@ class Account(AbstractBaseUser, PermissionsMixin):
     @property
     def full_name(self):
         return "{} {}".format(self.given_name, self.family_name)
-
