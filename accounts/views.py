@@ -10,12 +10,36 @@ from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 from rest_framework.response import Response
 from rest_framework import status
 from accounts.models import Account
-from accounts.serializers import GoogleLoginSerializer, AccountSerializer
+from accounts.serializers import GoogleLoginSerializer, AccountSerializer, RegistrationSerializer
 from django.dispatch import receiver
 from allauth.socialaccount.signals import social_account_updated
 from django.core.files import File
 from django.core.files.temp import NamedTemporaryFile
 import urllib.request
+from rest_framework_simplejwt.tokens import RefreshToken
+
+class RegistrationViewSet(ModelViewSet, TokenObtainPairView):
+    serializer_class = RegistrationSerializer
+    permission_classes = (AllowAny,)
+    http_method_names = ['post']
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        refresh = RefreshToken.for_user(user)
+        res = {
+            "refresh": str(refresh),
+            "access": str(refresh.access_token),
+        }
+
+        return Response({
+            "user": serializer.data,
+            "refresh": res["refresh"],
+            "token": res["access"]
+        }, status=status.HTTP_201_CREATED)
+
 
 class AccountView(ModelViewSet):
     serializer_class = AccountSerializer
@@ -86,3 +110,4 @@ def populate_profile(sociallogin, **kwargs):
     user.given_name = given_name
     user.family_name = family_name
     user.save()
+

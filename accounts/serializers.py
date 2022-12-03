@@ -91,4 +91,28 @@ class GoogleLoginSerializer(SocialLoginSerializer):
 
         return attrs
 
-#TODO: RegistrationSerializer bauen
+class RegistrationSerializer(AccountSerializer):
+    given_name = serializers.CharField(required=True, min_length=1)
+    family_name = serializers.CharField(required=True, min_length=1)
+    picture = serializers.ImageField(default=None, required=False, allow_null=True)
+    password = serializers.CharField(max_length=128, min_length=8, write_only=True, required=True)
+    password2 = serializers.CharField(max_length=128, min_length=8, write_only=True, required=True)
+    email = serializers.EmailField(required=True, write_only=True, max_length=128)
+
+    class Meta:
+        model = Account
+        fields = ["id", "email", "given_name", "family_name", "picture", "password", "password2" ]
+
+    def create(self, validated_data):
+        if Account.objects.filter(email=validated_data["email"]).exists():
+            raise serializers.ValidationError({"email": "This email is taken."})
+        password = validated_data.pop("password")
+        password2 = validated_data.pop("password2")
+        account = Account(
+            **validated_data,
+        )
+        if password != password2:
+            raise serializers.ValidationError({"password": "Passwords must match."})
+        account.set_password(password)
+        account.save()
+        return account
