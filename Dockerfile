@@ -6,4 +6,4 @@ COPY requirements.txt .
 RUN pip install -r requirements.txt
 COPY . .
 RUN python manage.py collectstatic --noinput
-CMD gunicorn --bind :8000 --workers 3 core.wsgi:application
+CMD gunicorn --bind :8000 --workers 1 core.wsgi:application
