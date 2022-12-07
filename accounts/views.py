@@ -124,16 +124,16 @@ def populate_profile(sociallogin, **kwargs):
 
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
-def get_user_categories(request, pk=None):
+def get_user_categories(request):
     if request.method == "GET":
-        account = Account.objects.get(pk=pk)
+        account = Account.objects.get(pk=request.user.pk)
         serializer = CategorySerializer(account.categories.all(), many=True)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
-def get_user_keywords(request, pk=None):
+def get_user_keywords(request):
     if request.method == "GET":
-        account = Account.objects.get(pk=pk)
+        account = Account.objects.get(pk=request.user.pk)
         serializer = KeywordSerializer(account.keywords.all(), many=True)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
