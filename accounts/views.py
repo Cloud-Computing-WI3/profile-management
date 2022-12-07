@@ -17,9 +17,9 @@ from django.core.files import File
 from django.core.files.temp import NamedTemporaryFile
 import urllib.request
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from categories.serializers import CategorySerializer
-
+from keywords.serializers import KeywordSerializer
 
 class RegistrationViewSet(ModelViewSet, TokenObtainPairView):
     serializer_class = RegistrationSerializer
@@ -120,9 +120,20 @@ def populate_profile(sociallogin, **kwargs):
     user.given_name = given_name
     user.family_name = family_name
     user.save()
-@api_view(["GET", "POST", "PUT"])
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
 def get_user_categories(request, pk=None):
     if request.method == "GET":
         account = Account.objects.get(pk=pk)
         serializer = CategorySerializer(account.categories.all(), many=True)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def get_user_keywords(request, pk=None):
+    if request.method == "GET":
+        account = Account.objects.get(pk=pk)
+        serializer = KeywordSerializer(account.keywords.all(), many=True)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
