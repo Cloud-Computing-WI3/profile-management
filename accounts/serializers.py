@@ -55,7 +55,7 @@ class AccountSerializer(serializers.ModelSerializer):
         if "groups" in validated_data:
             groups_data = validated_data.pop("groups")
             for group in initial_groups:
-                if group.name not in  [g["name"] for g in groups_data]:
+                if group.name not in [g["name"] for g in groups_data]:
                     instance.groups.remove(group)
             for group in groups_data:
                 if not Group.objects.filter(name=group["name"]).exists():
@@ -67,7 +67,7 @@ class AccountSerializer(serializers.ModelSerializer):
         if "keywords" in validated_data:
             keywords_data = validated_data.pop("keywords")
             for keyword in initial_keywords:
-                if keyword.name not in  [k["name"] for k in keywords_data]:
+                if keyword.name not in [k["name"] for k in keywords_data]:
                     instance.keywords.remove(keyword)
             for keyword in keywords_data:
                 if not Keyword.objects.filter(name=keyword["name"]).exists():
@@ -79,7 +79,7 @@ class AccountSerializer(serializers.ModelSerializer):
         if "categories" in validated_data:
             categories_data = validated_data.pop("categories")
             for category in initial_categories:
-                if category.name not in  [c["name"] for c in categories_data]:
+                if category.name not in [c["name"] for c in categories_data]:
                     instance.categories.remove(category)
             for category in categories_data:
                 if not Category.objects.filter(name=category["name"]).exists():
