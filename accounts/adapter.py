@@ -9,4 +9,4 @@ class AccountAdapter(DefaultAccountAdapter):
         user.family_name = data.get("family_name")
         user.picture = data.get("picture")
         user.save()
-        return user 
+        return user

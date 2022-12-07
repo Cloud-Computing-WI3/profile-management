@@ -17,11 +17,14 @@ from django.core.files import File
 from django.core.files.temp import NamedTemporaryFile
 import urllib.request
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.decorators import api_view
+from categories.serializers import CategorySerializer
+
 
 class RegistrationViewSet(ModelViewSet, TokenObtainPairView):
     serializer_class = RegistrationSerializer
     permission_classes = (AllowAny,)
-    http_method_names = ['post']
+    http_method_names = ["post"]
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -45,7 +48,7 @@ class AccountView(ModelViewSet):
     serializer_class = AccountSerializer
     permission_classes = (IsAuthenticated,)
     queryset = Account.objects.all()
-    http_method_names = ["get", "post", "put", "delete"]
+    http_method_names = ["get", "put", "patch", "head", "options", "trace", "delete", ]
 
     def retrieve(self, request, pk=None):
         queryset = Account.objects.all()
@@ -62,8 +65,15 @@ class AccountView(ModelViewSet):
     def create(self, request, *args, **kwargs):
         pass
 
-    def update(self, request, *args, **kwargs):
-        pass
+    def update(self, request, pk=None):
+        queryset = Account.objects.all()
+        user = get_object_or_404(queryset, pk=pk)
+        serializer = AccountSerializer(user, data=request.data)
+
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
 
     def destroy(self, request, *args, **kwargs):
         pass
@@ -110,4 +120,9 @@ def populate_profile(sociallogin, **kwargs):
     user.given_name = given_name
     user.family_name = family_name
     user.save()
-
+@api_view(["GET", "POST", "PUT"])
+def get_user_categories(request, pk=None):
+    if request.method == "GET":
+        account = Account.objects.get(pk=pk)
+        serializer = CategorySerializer(account.categories.all(), many=True)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
