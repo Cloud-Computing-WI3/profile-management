@@ -28,7 +28,7 @@ CSRF_COOKIE_SECURE = True
 DEBUG = False
 
 ALLOWED_HOSTS = ["127.0.0.1", "localhost", "profile-management-2qda3nwega-uc.a.run.app"]
-CORS_ALLOWED_ORIGINS = ["http://localhost:3000", "https://20221117t211429-dot-cohesive-slate-368310.uc.r.appspot.com"]
+CORS_ALLOWED_ORIGINS = ["http://localhost:3000", "https://cohesive-slate-368310.uc.r.appspot.com"]
 # Application definition
 AUTH_USER_MODEL = "accounts.Account"
 
