@@ -1,10 +1,12 @@
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenRefreshSerializer
-from dj_rest_auth.registration.serializers import SocialLoginSerializer, RegisterSerializer
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from dj_rest_auth.registration.serializers import SocialLoginSerializer
 from django.contrib.auth.models import update_last_login
 from rest_framework_simplejwt.settings import api_settings
 from rest_framework import serializers
 from django.contrib.auth.models import Group
-from .models import Account, Category, Keyword
+from .models import Account
+from categories.models import Category
+from keywords.models import Keyword
 
 class CategorySerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -36,6 +38,7 @@ class AccountSerializer(serializers.ModelSerializer):
     groups = GroupSerializer(many=True, required=False)
     keywords = KeywordSerializer(many=True, required=False)
     categories = CategorySerializer(many=True, required=False)
+    picture = serializers.FileField(required=False)
 
     class Meta:
         model = Account
@@ -46,15 +49,44 @@ class AccountSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         initial_groups = instance.groups.all()
+        initial_keywords = instance.keywords.all()
+        initial_categories = instance.categories.all()
+
         if "groups" in validated_data:
             groups_data = validated_data.pop("groups")
             for group in initial_groups:
-                if group.name not in  [g["name"] for g in groups_data]:
+                if group.name not in [g["name"] for g in groups_data]:
                     instance.groups.remove(group)
             for group in groups_data:
                 if not Group.objects.filter(name=group["name"]).exists():
                     g = Group.objects.create(name=group["name"])
-                    instance.groups.add(g)
+                else:
+                    g = Group.objects.get(name=group["name"])
+                instance.groups.add(g)
+
+        if "keywords" in validated_data:
+            keywords_data = validated_data.pop("keywords")
+            for keyword in initial_keywords:
+                if keyword.name not in [k["name"] for k in keywords_data]:
+                    instance.keywords.remove(keyword)
+            for keyword in keywords_data:
+                if not Keyword.objects.filter(name=keyword["name"]).exists():
+                    k = Keyword.objects.create(name=keyword["name"])
+                else:
+                    k = Keyword.objects.get(name=keyword["name"])
+                instance.keywords.add(k)
+
+        if "categories" in validated_data:
+            categories_data = validated_data.pop("categories")
+            for category in initial_categories:
+                if category.name not in [c["name"] for c in categories_data]:
+                    instance.categories.remove(category)
+            for category in categories_data:
+                if not Category.objects.filter(name=category["name"]).exists():
+                    c = Category.objects.create(name=category["name"])
+                else:
+                    c = Category.objects.get(name=category["name"])
+                instance.categories.add(c)
 
         instance.email = validated_data.get("email", instance.email)
         instance.given_name = validated_data.get("given_name", instance.given_name)
@@ -91,4 +123,28 @@ class GoogleLoginSerializer(SocialLoginSerializer):
 
         return attrs
 
-#TODO: RegistrationSerializer bauen
+class RegistrationSerializer(AccountSerializer):
+    given_name = serializers.CharField(required=True, min_length=1)
+    family_name = serializers.CharField(required=True, min_length=1)
+    picture = serializers.ImageField(default=None, required=False, allow_null=True)
+    password = serializers.CharField(max_length=128, min_length=8, write_only=True, required=True)
+    password2 = serializers.CharField(max_length=128, min_length=8, write_only=True, required=True)
+    email = serializers.EmailField(required=True, write_only=True, max_length=128)
+
+    class Meta:
+        model = Account
+        fields = ["id", "email", "given_name", "family_name", "picture", "password", "password2" ]
+
+    def create(self, validated_data):
+        if Account.objects.filter(email=validated_data["email"]).exists():
+            raise serializers.ValidationError({"email": "This email is taken."})
+        password = validated_data.pop("password")
+        password2 = validated_data.pop("password2")
+        account = Account(
+            **validated_data,
+        )
+        if password != password2:
+            raise serializers.ValidationError({"password": "Passwords must match."})
+        account.set_password(password)
+        account.save()
+        return account

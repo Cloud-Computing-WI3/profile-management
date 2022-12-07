@@ -11,4 +11,5 @@ See full list in `requirements.txt`
 ##  Structure
 ##  Getting started
 1. Start development service by running `python manage.py runserver`
+
 ##  Deployment
