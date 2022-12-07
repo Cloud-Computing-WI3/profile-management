@@ -21,7 +21,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = "4LjeiHkz$&@un5B68c2Kn4%hm4W*N4nMBoD8NtxS%mJjxX9!F5oj!U*AT3^B76@*f&hFSdPN*Y%pcDLCMg5ii"
-SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 
