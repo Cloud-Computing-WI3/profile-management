@@ -26,7 +26,7 @@ SECRET_KEY = "django-insecure-^dfd+2vfj9df%)gofr7h72b@-0f*h8=p31@6tyjaf8edk7g+0*
 # SECURITY WARNING: don"t run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["127.0.0.1", "localhost", "profile-management-2qda3nwega-uc.a.run.app"]
+ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
 CORS_ALLOWED_ORIGINS = ["http://localhost:3000"]
 # Application definition
 AUTH_USER_MODEL = "accounts.Account"
@@ -94,16 +94,26 @@ WSGI_APPLICATION = "core.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.mysql",
-        "NAME": "profile_management",
-        "USER": "admin",
-        "PASSWORD": "W*2mLDsXQy7TYc",
-        "HOST": "profile-management.c9epzfgto5cy.us-east-1.rds.amazonaws.com",
-        "PORT": "3306",
+if DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': 'dev_database.sqlite',
+        }
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.mysql",
+            "NAME": "profile_management",
+            "USER": "YOUR-DB-USER",
+            "PASSWORD": "YOUR-DB-PASSWORD",
+            "HOST": "YOUR-AWS-RDS-HOST-NAME",
+            "PORT": "3306",
+        }
+    }
+
+
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
@@ -166,9 +176,9 @@ USE_TZ = True
 STATIC_URL = "static/"
 
 # File Uploads
-AWS_ACCESS_KEY_ID = "AKIAT4ACZN3WATI5FKQ7"
-AWS_SECRET_ACCESS_KEY = "oLk7XuFUp/8W1O06C4dFaAIIz6jIp8NmAR+a135j"
-AWS_STORAGE_BUCKET_NAME = "profile-management-m-ngucu959yxpxdmrffqra1buedz47ruse1b-s3alias"
+AWS_ACCESS_KEY_ID = "YOUR-AWS-ACCESS-KEY-ID-HERE"
+AWS_SECRET_ACCESS_KEY = "YOUR-AWS-SECRET-ACCESS-KEY-HERE"
+AWS_STORAGE_BUCKET_NAME = "YOUR-S3-BUCKET-NAME-HERE"
 AWS_S3_SIGNATURE_VERSION = "s3v4"
 AWS_S3_REGION_NAME = "us-east-1"
 AWS_S3_FILE_OVERWRITE = False
