@@ -25,6 +25,8 @@ def user_picture_path(instance, filename):
     return os.path.join(upload_to, filename)
 
 class Account(AbstractBaseUser, PermissionsMixin):
+
+    # Account attributes
     email = models.EmailField(_('email address'), unique=True)
     given_name = models.CharField(_("given name"), max_length=25)
     family_name = models.CharField(_("family name"), max_length=25)
@@ -35,7 +37,7 @@ class Account(AbstractBaseUser, PermissionsMixin):
     categories = models.ManyToManyField(Category)
     keywords = models.ManyToManyField(Keyword)
 
-
+    # Set user is identified by email and has to be registered with a valid email
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
 

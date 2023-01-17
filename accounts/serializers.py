@@ -8,6 +8,7 @@ from .models import Account
 from categories.models import Category
 from keywords.models import Keyword
 
+
 class CategorySerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Category
@@ -15,6 +16,7 @@ class CategorySerializer(serializers.HyperlinkedModelSerializer):
         extra_kwargs = {
             "name": {"validators": []},
         }
+
 
 class KeywordSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -48,46 +50,80 @@ class AccountSerializer(serializers.ModelSerializer):
         ]
 
     def update(self, instance, validated_data):
+        # store the initial groups, keywords, and categories associated with the instance
         initial_groups = instance.groups.all()
         initial_keywords = instance.keywords.all()
         initial_categories = instance.categories.all()
 
+        # if the "groups" key is present in the validated_data dictionary
         if "groups" in validated_data:
+            # remove the groups data from the validated_data dictionary
             groups_data = validated_data.pop("groups")
+            # iterate over the initial groups
             for group in initial_groups:
+                # if the group name is not in the updated groups data
                 if group.name not in [g["name"] for g in groups_data]:
+                    # remove the group from the instance's groups
                     instance.groups.remove(group)
+            # iterate over the updated groups data
             for group in groups_data:
+                # if a group with the same name does not already exist in the database
                 if not Group.objects.filter(name=group["name"]).exists():
+                    # create a new group with the provided name
                     g = Group.objects.create(name=group["name"])
                 else:
+                    # otherwise, retrieve the existing group from the database
                     g = Group.objects.get(name=group["name"])
+                # add the group to the instance's groups
                 instance.groups.add(g)
-
+        # If the "keywords" key is present in the validated_data dictionary
         if "keywords" in validated_data:
+            # remove the keywords data from the validated_data dictionary
             keywords_data = validated_data.pop("keywords")
+            # iterate over the initial keywords
             for keyword in initial_keywords:
+                # if the keyword name is not in the updated keywords data
                 if keyword.name not in [k["name"] for k in keywords_data]:
+                    # remove the keyword from the instance's keywords
                     instance.keywords.remove(keyword)
+            # iterate over the updated keywords data
             for keyword in keywords_data:
+                # if a keyword with the same name does not already exist in the database
                 if not Keyword.objects.filter(name=keyword["name"]).exists():
+                    # create a new keyword with the provided name
                     k = Keyword.objects.create(name=keyword["name"])
                 else:
+                    # otherwise, retrieve the existing keyword from the database
                     k = Keyword.objects.get(name=keyword["name"])
+                # add the keyword to the instance's keywords
                 instance.keywords.add(k)
 
+        # If the "categories" key is present in the validated_data dictionary
         if "categories" in validated_data:
+            # remove the categories data from the validated_data dictionary
             categories_data = validated_data.pop("categories")
+
+            # iterate over the initial categories
             for category in initial_categories:
+
+                # if the category name is not in the updated categories data
                 if category.name not in [c["name"] for c in categories_data]:
+                    # remove the category from the instance's categories
                     instance.categories.remove(category)
+
+            # iterate over the updated categories data
             for category in categories_data:
+                # if a category with the same name does not already exist in the database
                 if not Category.objects.filter(name=category["name"]).exists():
+                    # create a new category with the provided name
                     c = Category.objects.create(name=category["name"])
                 else:
+                    # otherwise, retrieve the existing category from the database
                     c = Category.objects.get(name=category["name"])
+                # add the category to the instance's categories
                 instance.categories.add(c)
 
+        # save other data from validated dict
         instance.email = validated_data.get("email", instance.email)
         instance.given_name = validated_data.get("given_name", instance.given_name)
         instance.family_name = validated_data.get("family_name", instance.family_name)
@@ -95,20 +131,27 @@ class AccountSerializer(serializers.ModelSerializer):
         instance.is_superuser = validated_data.get("is_superuser", instance.is_superuser)
         instance.picture = validated_data.get("picture", instance.picture)
         instance.save()
+
         return instance
 
 
 class LoginSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
+        # call the parent class's validate method and store the returned data
         data = super().validate(attrs)
 
+        # add the serialized user object to the data
         data["user"] = AccountSerializer(self.user).data
 
+        # check if the 'UPDATE_LAST_LOGIN' attribute is set to True in settings.py, if true, call the 'update_last_login' function
         if api_settings.UPDATE_LAST_LOGIN:
             update_last_login(None, self.user)
+        # rename the 'refresh' token to 'refresh_token'
         data["refresh_token"] = data.pop("refresh")
+        # rename the 'access' token to 'access_token'
         data["access_token"] = data.pop("access")
         return data
+
 
 class GoogleLoginSerializer(SocialLoginSerializer):
     account = AccountSerializer(required=False)
@@ -116,12 +159,14 @@ class GoogleLoginSerializer(SocialLoginSerializer):
     def get_cleaned_data(self):
         data_dict = super().get_cleaned_data()
         return data_dict
+
     def validate(self, attrs):
         attrs = super().validate(attrs)
         account = AccountSerializer(attrs["user"]).data
         attrs["acc"] = account
 
         return attrs
+
 
 class RegistrationSerializer(AccountSerializer):
     given_name = serializers.CharField(required=True, min_length=1)
@@ -133,7 +178,7 @@ class RegistrationSerializer(AccountSerializer):
 
     class Meta:
         model = Account
-        fields = ["id", "email", "given_name", "family_name", "picture", "password", "password2" ]
+        fields = ["id", "email", "given_name", "family_name", "picture", "password", "password2"]
 
     def create(self, validated_data):
         if Account.objects.filter(email=validated_data["email"]).exists():
