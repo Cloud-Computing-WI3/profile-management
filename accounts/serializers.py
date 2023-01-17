@@ -127,9 +127,10 @@ class AccountSerializer(serializers.ModelSerializer):
         instance.email = validated_data.get("email", instance.email)
         instance.given_name = validated_data.get("given_name", instance.given_name)
         instance.family_name = validated_data.get("family_name", instance.family_name)
-        instance.is_staff = validated_data.get("is_staff", instance.is_staff)
-        instance.is_superuser = validated_data.get("is_superuser", instance.is_superuser)
-        instance.picture = validated_data.get("picture", instance.picture)
+        #instance.is_staff = validated_data.get("is_staff", instance.is_staff)
+        #instance.is_superuser = validated_data.get("is_superuser", instance.is_superuser)
+        if instance.picture is None:
+            instance.picture = validated_data.get("picture", instance.picture)
         instance.save()
 
         return instance
